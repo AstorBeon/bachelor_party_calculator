@@ -7,6 +7,15 @@ from PIL import Image
 
 #image = Image.open('dominik_cut.png')
 
+
+transport_min=-1
+transport_max=1
+accom_min=-1
+accom_max=-1
+foods_min = -1
+foods_max=-1
+
+
 st.set_page_config(page_title="Dominik's Bachelor Party - cost breakdown calculator",layout="wide")#, page_icon = st.image(image))
 
 
@@ -23,7 +32,7 @@ random_activities=["Washing my car","Doing pushups","Drinking liquids on first s
 
 #st.set_page_config(layout="wide")
 st.title("Dominik's Bachelor party - Cost breakdown")
-
+limit= st.text_input('Amount to be spent', '600')
 st.subheader('Transportation')
 
 
@@ -33,22 +42,26 @@ option = st.selectbox(
 
 if(option == "Train"):
     cost_of_transport = st.text_input('Cost of the ticket (two ways)', '150')
-    transport_total = int(cost_of_transport)
+    cost_of_transport_on_site= st.text_input('Cost of transportation on site', '20')
+    transport_total = int(cost_of_transport) + int(cost_of_transport_on_site)
 else:
     adv = st.checkbox('Advanced transport calculations')
     if not adv:
-        cost_of_transport_fuel = st.text_input('Cost of fuel:', '150')
-        transport_total = int(cost_of_transport_fuel)
+        cost_of_transport_fuel = st.text_input('Cost of fuel:', '250')
+        cost_of_transport_on_site = st.text_input('Cost of transportation on site', '20')
+        transport_total = int(cost_of_transport_fuel) + int(cost_of_transport_on_site)
     else:
         cost_of_transport_litres_per_100km = st.text_input('Litres of fuel 100km:', '10')
         cost_of_transport_cost_of_litre = st.text_input("Cost of single litre(pln):", '7')
-        cost_of_transport_length = st.text_input('Length of whole route(km) - two ways:', '300')
+        cost_of_transport_length = st.text_input('Length of whole route(km) - two ways:', '356')
         cost_of_transport_highway_fee = st.text_input('Cost of highway fees:', '20')
+        cost_of_transport_on_site = st.text_input('Cost of transportation on site', '20')
         transport_total = float(cost_of_transport_highway_fee) + \
                           float(cost_of_transport_length) / 100 * float(cost_of_transport_cost_of_litre) *\
-                          float(cost_of_transport_litres_per_100km)
+                          float(cost_of_transport_litres_per_100km) + float(cost_of_transport_on_site)
 
         cost_of_transport_deviation = st.text_input('Deviation/Reserve:', '10')
+        cost_of_transport_deviation_calculation = transport_total/int(cost_of_transport_deviation)
         st.markdown("""
         <style>
         .big-font {
@@ -61,11 +74,54 @@ else:
 
 st.subheader('Accomodation')
 cost_of_accomodation = st.text_input('Cost of accomodation(total):', '220')
+cost_of_accomodation_deviation = st.text_input('Deviation/Reserve:', '5')
+st.markdown("""
+<style>
+.big-font {
+    font-size:20px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+try:
+    accomodation_total_deviation_calculation =int(cost_of_accomodation) / float(cost_of_accomodation_deviation)
+    accom_min=int(cost_of_accomodation)-accomodation_total_deviation_calculation
+    accom_max=int(cost_of_accomodation)+accomodation_total_deviation_calculation
+except Exception:
+    accomodation_total_deviation_calculation=0
+    accom_min,accom_max=int(cost_of_accomodation),int(cost_of_accomodation)
+if accomodation_total_deviation_calculation==0:
+    st.markdown(
+        f'<p class="big-font">Total cost of transport is: ---> {cost_of_accomodation}pln</p>',
+        unsafe_allow_html=True)
+else:
+    st.markdown(
+        f'<p class="big-font">Including {cost_of_accomodation_deviation}% deviation, total cost of transport is between : ---> {int(cost_of_accomodation)-accomodation_total_deviation_calculation} and {int(cost_of_accomodation)+accomodation_total_deviation_calculation}pln</p>',
+        unsafe_allow_html=True)
+
 
 st.subheader('Food & Drinks')
 cost_of_food = st.text_input('Cost of food', '160')
 cost_of_drinks = st.text_input('Cost of drinks (alc)', '150')
 total_cost_foods_drinks = int(cost_of_food) + int(cost_of_drinks)
+cost_of_food_deviation = st.text_input('Deviation:', '0')
+
+try:
+    foods_total_deviation_calculation =int(total_cost_foods_drinks) / float(cost_of_food_deviation)
+    foods_min=total_cost_foods_drinks-foods_total_deviation_calculation
+    foods_max=total_cost_foods_drinks+foods_total_deviation_calculation
+except Exception:
+    foods_total_deviation_calculation=0
+    foods_min,foods_max=total_cost_foods_drinks,total_cost_foods_drinks
+if foods_total_deviation_calculation==0:
+    st.markdown(
+        f'<p class="big-font">Total cost of foods and drinks is: ---> {total_cost_foods_drinks}pln</p>',
+        unsafe_allow_html=True)
+else:
+    st.markdown(
+        f'<p class="big-font">Including {cost_of_food_deviation}% deviation, total cost of foods and drinks is between : ---> {int(total_cost_foods_drinks)-foods_total_deviation_calculation} and {int(total_cost_foods_drinks)+foods_total_deviation_calculation}pln</p>',
+        unsafe_allow_html=True)
+
+
 
 st.subheader("Activities")
 
@@ -120,15 +176,41 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def generate_knowledge_summary():
-    knowledge_summary = f"<br>SUMMARY:<br>" \
-                        f"Way of transportation: {option} -> {transport_total}pln<br>" \
-                        f"Accomodation -> {cost_of_accomodation}<br>" \
-                        f"Activities:<br>"
+    st.subheader("Summary:")
+    knowledge_summary =  f"Way of transportation: {option} ->"
 
+    try:
+        cost_of_transport_deviation_calculation
+        transport_min =transport_total - cost_of_transport_deviation_calculation
+        transport_max = transport_total + cost_of_transport_deviation_calculation
+        knowledge_summary += f"{transport_min} <-> {transport_max}<br>"
+
+
+    except Exception:
+        knowledge_summary += f"{transport_total}pln<br>"
+        transport_min,transport_max = transport_total,transport_total
+
+    knowledge_summary+=f"Accomodation -> "
+    if accomodation_total_deviation_calculation !=0:
+        accom_min = int(cost_of_accomodation)-accomodation_total_deviation_calculation
+        accom_max=int(cost_of_accomodation)+accomodation_total_deviation_calculation
+        knowledge_summary+=f"{accom_min} <-> {accom_max}<br>"
+    else:
+        knowledge_summary+=f"{cost_of_accomodation}<br>"
+
+    knowledge_summary+=f"Foods & drinks -> "
+    if(foods_total_deviation_calculation!=0):
+        foods_min = total_cost_foods_drinks-foods_total_deviation_calculation
+        foods_max = total_cost_foods_drinks+foods_total_deviation_calculation
+        knowledge_summary+=f"{foods_min} <-> {foods_max}<br>"
+    else:
+        knowledge_summary+=f"{total_cost_foods_drinks}<br>"
+
+    knowledge_summary+=f"Activities -> {activities_cost}pln:<br>"
     for activity in st.session_state['activities']:
         knowledge_summary += f"----{activity[0]} -> {activity[1]}pln<br>"
 
-    knowledge_summary+=f"Total for activities is: {activities_cost}"
+    #knowledge_summary+=f"Total for activities is: {activities_cost}"
     return knowledge_summary
 
 #knowledge_summary=generate_knowledge_summary()
@@ -139,8 +221,36 @@ def show_summary():
     unsafe_allow_html=True)
 
 
-st.button(f"Generate sumary!",on_click=show_summary)
+#st.button(f"Generate sumary!",on_click=show_summary)
 show_summary()
+true_total_cost = transport_total + int(cost_of_accomodation) + total_cost_foods_drinks+activities_cost
+addition_for_bach = st.text_input("Percentage added for bachelor (cos he doesn't pay for himself)","10")
+true_total_cost *= 1+float(addition_for_bach)/100
+
+min_costs=foods_min + accom_min + transport_min + int(activities_cost)
+print(f"First min:{min_costs}")
+min_costs*=1+float(addition_for_bach)/100
+print(f"Second min:{min_costs}")
+max_costs=foods_max + transport_max + accom_max + int(activities_cost)
+max_costs*=1+float(addition_for_bach)/100
+
+if (min_costs!=max_costs):
+    st.markdown(
+        f'<p class="big-font-res">Total cost is between {round(min_costs,2)}pln and {round(max_costs,2)}</p>',
+        unsafe_allow_html=True)
+else:
+    st.markdown(
+    f'<p class="big-font-res">Total cost is {true_total_cost}</p>',
+    unsafe_allow_html=True)
+
+
+if (min_costs+max_costs)/2>int(limit):
+    st.error(f"Including all deviations, total cost WILL be higher than planned - from {round(min_costs-int(limit),2)} up to {round(max_costs-int(limit),2)} over the limit")
+elif max_costs>int(limit):
+    st.error(
+        f"Including all deviations, total cost might be higher than planned - up to {round(max_costs - int(limit),2)} over the limit")
+
+
 
 
 
