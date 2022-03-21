@@ -228,9 +228,9 @@ addition_for_bach = st.text_input("Percentage added for bachelor (cos he doesn't
 true_total_cost *= 1+float(addition_for_bach)/100
 
 min_costs=foods_min + accom_min + transport_min + int(activities_cost)
-print(f"First min:{min_costs}")
+
 min_costs*=1+float(addition_for_bach)/100
-print(f"Second min:{min_costs}")
+
 max_costs=foods_max + transport_max + accom_max + int(activities_cost)
 max_costs*=1+float(addition_for_bach)/100
 
