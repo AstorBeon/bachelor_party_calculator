@@ -183,7 +183,7 @@ def generate_knowledge_summary():
         cost_of_transport_deviation_calculation
         transport_min =transport_total - cost_of_transport_deviation_calculation
         transport_max = transport_total + cost_of_transport_deviation_calculation
-        knowledge_summary += f"{transport_min} <-> {transport_max}<br>"
+        knowledge_summary += f"{round(transport_min,2)} <-> {round(transport_max,2)}<br>"
 
 
     except Exception:
