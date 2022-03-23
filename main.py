@@ -256,93 +256,19 @@ elif max_costs>int(limit):
 
 
 
-#Histogram
-#
-#
-# # Group data together
-# hist_data = [float(transport_total),float(cost_of_accomodation),float(activities_cost), float(total_cost_foods_drinks)  ]
-#
-# group_labels = ['Transport','Accomodation', 'Activities','Foods & Drinks']
-#
-# # Create distplot with custom bin_size
-# fig = ff.create_distplot(
-#          hist_data, group_labels)#, bin_size=[.1, .25, .5, 1])
-#
-# # Plot!
-# st.plotly_chart(fig, use_container_width=True)
-#
-#
-#
-#
-#
+st.markdown("""
+<style>
+.footerstyle{
+    font-size:12px !important;
+    font-weight: bold;
+}
+</style>
+""", unsafe_allow_html=True)
 
-#arr = np.random.normal(1, 1, size=100)
-#
-# import altair as alt
-#
-# source = pd.DataFrame({"category": ["Transportation","Accomodation",'Activities',"Foods & Drinks"], "value": [transport_total,
-#                                                                                                               int(cost_of_accomodation),
-#                                                                                                               activities_cost,
-#                                                                                                               total_cost_foods_drinks]})
-#
-# base = alt.Chart(source).encode(
-#     theta=alt.Theta("value:Q", stack=True), color=alt.Color("category:N", legend=None)
-# )
-#
-# pie = base.mark_arc(outerRadius=120)
-# text = base.mark_text(radius=140, size=20).encode(text="category:N")
-#
-# st.altair_chart(pie + text)
-#
-# st.markdown(
-#     f'<p class="big-font-res"><br>Total cost of your trip is {total_cost}pln</p>',
-#     unsafe_allow_html=True)
-#
-# initial=False
-#
-# #
-# # st.write('You selected:', option)
-# #
-# # cost_of_transport = st.text_input('Cost of transportation', '150')
-# # cost_of_accom = st.text_input('Cost of accomodation', '220')
-# #
-# #
-# #
-# #
-# # hour_to_filter = st.slider('hour', 0, 23, 17)
-# #
-# #
-# #
-# #
-# #
-#
-# DATE_COLUMN = 'date/time'
-# DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
-#          'streamlit-demo-data/uber-raw-data-sep14.csv.gz')
-#
-# def load_data(nrows):
-#     data = pd.read_csv(DATA_URL, nrows=nrows)
-#     lowercase = lambda x: str(x).lower()
-#     data.rename(lowercase, axis='columns', inplace=True)
-#     data[DATE_COLUMN] = pd.to_datetime(data[DATE_COLUMN])
-#     return data
-#
-#
-#
-# data_load_state = st.text('Loading data...')
-# # Load 10,000 rows of data floato the dataframe.
-# data = load_data(10000)
-# # Notify the reader that the data was successfully loaded.
-# data_load_state.text('Loading data...done!')
-#
-#
-# hist_values = np.histogram(
-#     data[DATE_COLUMN].dt.hour, bins=24, range=(0,24))[0]
-#
-# st.bar_chart(hist_values)
-#
-# hour_to_filter = st.slider('hour', 0, 23, 17)
-#
-#
-#
-#
+
+st.markdown(
+     f'<p class="footerstyle"><br>Made by: Astor Beon - v. 1.0</p>',
+     unsafe_allow_html=True)
+
+
+
